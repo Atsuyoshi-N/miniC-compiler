@@ -55,12 +55,13 @@ typedef enum {
 typedef struct Node Node;
 struct Node {
   Nodekind kind; // Node kind
+  Node *next;    // Next node
   Node *lhs;     // Left-hand side
   Node *rhs;     // Right-hand side
   int val;       // Used if kind == ND_NUM
 };
 
-Node *expr();
+Node *program();
 
 //
 // codegen.c

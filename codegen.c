@@ -61,9 +61,10 @@ void codegen(Node *node) {
   printf("main:\n");
 
   // Traverse the AST to emit assembly.
-  gen(node);
+  for(Node *n = node; n; n = n->next) {
+    gen(n);
+    printf("  pop rax\n");
+  }
 
-  // 結果はスタックの一番上に積まれているのでそれをポップする.
-  printf("  pop rax\n");
   printf("  ret\n");
 }
