@@ -12,6 +12,7 @@ void gen(Node *node) {
       gen(node->lhs);
       printf("  pop rax\n");
       printf("  ret\n");
+      return;
   }
 
   gen(node->lhs);
