@@ -2,13 +2,6 @@
 //
 // Code generator
 //
-
-void gen(Node *node) {
-  if (node->kind == ND_NUM) {
-    printf("  push %d\n", node->val);
-    return;
-  }
-
 // 与えられたノードからコードを生成する
 void gen(Node *node) {
   switch (node->kind) {
