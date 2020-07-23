@@ -1,16 +1,6 @@
 ## C compiler
 
-### grammer
+### Reference
 
-```
-program    = stmt*
-stmt       = expr ";"
-expr       = assign
-assign     = equality ("=" assign)?
-equality   = relational ("==" relational | "!=" relational)*
-relational = add ("<" add | "<=" add | ">" add | ">=" add)*
-add        = mul ("+" mul | "-" mul)*
-mul        = unary ("*" unary | "/" unary)*
-unary      = ("+" | "-")? primary
-primary    = num | ident | "(" expr ")"
-```
+1. [低レイヤを知りたい人のための C コンパイラ作成入門](https://www.sigbus.info/compilerbook)
+2. [rui314/chibicc](https://github.com/rui314/chibicc)
