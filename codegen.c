@@ -33,6 +33,10 @@ void gen(Node *node) {
     case ND_NUM:
       printf("  push %d\n", node->val);
       return;
+    case ND_EXPR_STMT:
+      gen(node->lhs);
+      printf("  add rsp, 8\n");
+      return;
     case ND_VAR:
       gen_addr(node);
       load();

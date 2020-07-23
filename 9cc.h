@@ -62,6 +62,7 @@ typedef enum {
   ND_ASSIGN,    // =
   ND_RETURN,    // "return"
   ND_VAR,      // Local variable
+  ND_EXPR_STMT, // Expression statement
   ND_NUM,       // Integer
 } Nodekind;
 
