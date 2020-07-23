@@ -29,6 +29,13 @@ void error_at(char *loc, char *fmt, ...) {
   exit(1);
 }
 
+char *strndup(char *p, int len) {
+  char *buf = malloc(len+1);
+  strncpy(buf, p, len);
+  buf[len] = '\0';
+  return buf;
+}
+
 // 次のトークンが期待している記号のときには、トークンを1つ読み進めて
 // 真を返す。それ以外の場合には偽を返す。
 bool consume(char *op) {
@@ -85,7 +92,7 @@ bool startswith(char *p, char *q) {
 }
 
 bool is_alpha(char c) {
-  return ('a' <= c && c <= 'z' || ('A' <= c && c == 'Z') || c == '_');
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
 }
 
 bool is_alnum(char c) {
@@ -125,17 +132,19 @@ Token *tokenize() {
       continue;
     }
 
+    if (is_alpha(*p)) {
+      char *q = p++;
+      while(is_alnum(*p))
+        p++;
+      cur = new_token(TK_IDENT, cur, q, p - q);
+      continue;
+    }
+
     if (isdigit(*p)) {
       cur = new_token(TK_NUM, cur, p, 0);
       char *q = p;
       cur->val = strtol(p, &p, 10);
       cur->len = p - q;
-      continue;
-    }
-
-    if ('a' <= *p && *p <= 'z') {
-      cur = new_token(TK_IDENT, cur, p++, 1);
-      cur->len = 1;
       continue;
     }
 
