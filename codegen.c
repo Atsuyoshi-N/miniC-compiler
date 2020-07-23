@@ -3,6 +3,8 @@
 // Code generator
 //
 
+int labelseq = 0;
+
 // 与えられたノードのアドレスをスタックに積む
 void gen_addr(Node *node) {
   if (node->kind == ND_VAR) {
@@ -46,6 +48,29 @@ void gen(Node *node) {
       gen(node->rhs);
       store();
       return;
+    case ND_IF: {
+      int seq = labelseq++;
+      if (node->els) {
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je .Lelese%d\n", seq);
+        gen(node->then);
+        printf("  jmp .Lend%d\n", seq);
+        printf(".Lelse%d:\n", seq);
+        gen(node->els);
+        printf(".Lend%d:\n", seq);
+      } else {
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .Lend%d\n", seq);
+        gen(node->then);
+        printf(".Lend%d:\n", seq);
+      }
+      return;
+
+    }
     case ND_RETURN:
       gen(node->lhs);
       printf("  pop rax\n");

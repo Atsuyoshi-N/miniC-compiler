@@ -61,8 +61,9 @@ typedef enum {
   ND_LE,        // <=
   ND_ASSIGN,    // =
   ND_RETURN,    // "return"
-  ND_VAR,      // Local variable
+  ND_IF,        // "if"
   ND_EXPR_STMT, // Expression statement
+  ND_VAR,       // Local variable
   ND_NUM,       // Integer
 } Nodekind;
 
@@ -73,6 +74,12 @@ struct Node {
   Node *next;    // Next node
   Node *lhs;     // Left-hand side
   Node *rhs;     // Right-hand side
+
+  // "if" statement
+  Node *cond;
+  Node *then;
+  Node *els;
+
   Var *var;      // Used if kind == ND_VAR
   int val;       // Used if kind == ND_NUM
 };
