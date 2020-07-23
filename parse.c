@@ -87,6 +87,7 @@ Node *read_expr_stmt() {
 
 // stmt = "return" expr ";"
 //      | "if" "(" expr ")" stmt ("else" stmt)?
+//      | "while" "(" expr ")" stmt
 //      | expr ";"
 Node *stmt() {
   if (consume("return")) {
@@ -95,7 +96,7 @@ Node *stmt() {
     return node;
   }
 
-  if(consume("if")) {
+  if (consume("if")) {
     Node *node = new_node(ND_IF);
     expect("(");
     node->cond = expr();
@@ -103,6 +104,15 @@ Node *stmt() {
     node->then = stmt();
     if(consume("else"))
       node->els = stmt();
+    return node;
+  }
+
+  if (consume("while")) {
+    Node *node = new_node(ND_WHILE);
+    expect("(");
+    node->cond = expr();
+    expect(")");
+    node->then = stmt();
     return node;
   }
   Node *node = read_expr_stmt();
