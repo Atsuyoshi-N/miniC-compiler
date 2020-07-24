@@ -192,7 +192,7 @@ void codegen(Function *prog) {
   printf(".intel_syntax noprefix\n");
 
   for (Function *fn = prog; fn; fn = fn->next) {
-    printf(".globl %s\n", fn->name);
+    printf(".global %s\n", fn->name);
     printf("%s:\n", fn->name);
     funcname = fn->name;
 
@@ -200,6 +200,13 @@ void codegen(Function *prog) {
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, %d\n", fn->stack_size);
+
+    // スタックに引数を積む
+    int i = 0;
+    for (VarList *vl = fn->params; vl; vl = vl->next) {
+      Var *var = vl->var;
+      printf("  mov [rbp-%d], %s\n", var->offset, argreg[i++]);
+    }
 
     // Traverse the AST to emit assembly.
     for(Node *node = fn->node; node; node = node->next) {
