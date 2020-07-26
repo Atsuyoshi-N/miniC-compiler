@@ -3,5 +3,6 @@
 tmp*
 a.out
 9cc
+sample.c
 ubuntu-bionic-*
 .vagrant/**
