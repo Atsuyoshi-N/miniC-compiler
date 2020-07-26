@@ -6,8 +6,18 @@ int main(int argc, char **argv) {
   // トークナイズする
   user_input = argv[1];
   token = tokenize();
-  Node *node = expr();
-  codegen(node);
+  Function *prog = program();
+
+  for (Function *fn = prog; fn; fn = fn->next) {
+    int offset = 0;
+    for (VarList *vl = fn->locals; vl; vl = vl->next) {
+      offset += 8;
+      vl->var->offset = offset;
+    }
+    fn->stack_size = offset;
+  }
+
+  codegen(prog);
 
   return 0;
 }
