@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct Type Type;
+
 // トークンの種類
 typedef enum {
   TK_RESERVED, // 記号
@@ -85,6 +87,7 @@ typedef struct Node Node;
 struct Node {
   Nodekind kind; // Node kind
   Node *next;    // Next node
+  Type *ty;      // Type, e.g. int or pointer to int
   Token *tok;    // Representative token
 
   Node *lhs;     // Left-hand side
@@ -120,6 +123,19 @@ struct Function {
 };
 
 Function *program();
+
+//
+// type.c
+//
+
+typedef enum { TY_INT, TY_PTR } Typekind;
+
+struct Type {
+  Typekind kind;
+  Type *base;
+};
+
+void add_type(Function *prog);
 
 //
 // codegen.c
