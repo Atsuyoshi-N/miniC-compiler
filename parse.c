@@ -117,10 +117,16 @@ Program *program() {
   return prog;
 }
 
-// basetype = "int" "*"
+// basetype = ("char" | "int") "*"*
 Type *basetype() {
-  expect("int");
-  Type *ty = int_type();
+  Type *ty;
+  if (consume("char")) {
+    ty = char_type();
+  } else {
+    expect("int");
+    ty = int_type();
+  }
+
   while (consume("*"))
     ty = pointer_to(ty);
   return ty;
@@ -222,6 +228,10 @@ Node *read_expr_stmt() {
   return new_unary(ND_EXPR_STMT, expr(), tok);
 }
 
+bool is_typename() {
+  return peek("char") || peek("int");
+}
+
 // stmt = "return" expr ";"
 //      | "if" "(" expr ")" stmt ("else" stmt)?
 //      | "while" "(" expr ")" stmt
@@ -291,7 +301,7 @@ Node *stmt() {
     return node;
   }
 
-  if (tok = peek("int"))
+  if (is_typename())
     return declaration();
 
   Node *node = read_expr_stmt();
