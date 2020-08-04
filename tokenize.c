@@ -230,6 +230,21 @@ Token *tokenize() {
       continue;
     }
 
+    if (startswith(p, "//")) {
+      p += 2;
+      while (*p != '\n')
+        p++;
+      continue;
+    }
+
+    if (startswith(p, "/*")) {
+      char *q = strstr(p + 2, "*/");
+      if (!q)
+        error_at(p, "unclosed block comment");
+      p = q + 2;
+      continue;
+    }
+
     // Keyword or Multi-letter punctuator
     char *kw = starts_with_reserved(p);
     if (kw) {
