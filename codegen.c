@@ -94,7 +94,7 @@ void gen(Node *node) {
         gen(node->cond);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .Lelese%d\n", seq);
+        printf("  je  .Lelse%d\n", seq);
         gen(node->then);
         printf("  jmp .Lend%d\n", seq);
         printf(".Lelse%d:\n", seq);
