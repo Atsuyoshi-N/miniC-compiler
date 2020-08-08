@@ -55,6 +55,15 @@ void expect(char *op) {
   token = token->next;
 }
 
+// Ensure that the current token is TK_IDENT.
+char *expect_ident(void) {
+  if (token->kind != TK_IDENT)
+    error_at(token->str, "expected an identifier");
+  char *s = strndup(token->str, token->len);
+  token = token->next;
+  return s;
+}
+
 // Ensure that the current token is TK_NUM.
 long expect_number(void) {
   if (token->kind != TK_NUM)
