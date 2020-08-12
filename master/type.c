@@ -1,6 +1,7 @@
 #include "9cc.h"
 
 Type *void_type  = &(Type){ TY_VOID, 1, 1 };
+Type *bool_type  = &(Type){ TY_BOOL, 1, 1 };
 Type *char_type  = &(Type){ TY_CHAR, 1, 1 };
 Type *short_type = &(Type){ TY_SHORT, 2, 2 };
 Type *int_type   = &(Type){ TY_INT, 4, 4 };

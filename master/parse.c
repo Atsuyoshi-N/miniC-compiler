@@ -212,13 +212,15 @@ Program *program(void) {
 }
 
 // basetype = builtin-type | struct-decl | typedefname
-// builtin-type = "void" | "char" | "short" | "int" | "long"
+// builtin-type = "void" | "_Bool" | "char" | "short" | "int" | "long"
 static Type *basetype(void) {
   if (!is_typename())
     error_tok(token, "typename expected");
 
   if (consume("void"))
     return void_type;
+  if (consume("_Bool"))
+    return bool_type;
   if (consume("char"))
     return char_type;
   if (consume("short"))
@@ -436,8 +438,8 @@ static Node *declaration(void) {
 
 // Returs ture if the next token represents a type.
 static bool is_typename(void) {
-  return peek("void") || peek("char") || peek("short") || peek("int") ||
-         peek("long") || peek("struct") || find_typedef(token);
+  return peek("void") || peek("_Bool") ||  peek("char") || peek("short") ||
+         peek("int") || peek("long") || peek("struct") || find_typedef(token);
 }
 
 static Node *stmt(void) {
