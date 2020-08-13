@@ -186,6 +186,7 @@ static Node *stmt(void);
 static Node *stmt2(void);
 static Node *expr(void);
 static Node *assign(void);
+static Node *conditional(void);
 static Node *logor(void);
 static Node *logand(void);
 static Node *bitand(void);
@@ -877,10 +878,10 @@ static Node *expr(void) {
   return node;
 }
 
-// assign    = logor (assign-op assign)?
+// assign    = conditional (assign-op assign)?
 // assign-op = "\" | "+=" | "-=" | "*=" | "/=" | "<<=" | ">>="
 static Node *assign(void) {
-  Node *node = logor();
+  Node *node = conditional();
   Token *tok;
   if (tok = consume("="))
     return new_binary(ND_ASSIGN, node, assign(), tok);
@@ -914,6 +915,21 @@ static Node *assign(void) {
   }
 
   return node;
+}
+
+// conditional = logor ("?" expr ":" conditional)?
+static Node *conditional(void) {
+  Node *node = logor();
+  Token *tok = consume("?");
+  if (!tok)
+    return node;
+
+  Node *ternary = new_node(ND_TERNARY, tok);
+  ternary->cond = node;
+  ternary->then = expr();
+  expect(":");
+  ternary->els = conditional();
+  return ternary;
 }
 
 // logor = logand ("||" logand)*
