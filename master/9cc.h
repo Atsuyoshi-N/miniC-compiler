@@ -200,17 +200,20 @@ typedef enum {
 
 struct Type {
   TypeKind kind;
-  int size;        // sizeof() value
-  int align;       // alignment
-  Type *base;      // pointer or array
-  int array_len;   // array
-  Member *members; // struct
-  Type *return_ty; // function
+  int size;           // sizeof() value
+  int align;          // alignment
+  bool is_incomplete; // incomplete type
+
+  Type *base;         // pointer or array
+  int array_len;      // array
+  Member *members;    // struct
+  Type *return_ty;    // function
 };
 
 struct Member {
   Member *next;
   Type *ty;
+  Token *tok; // for error message
   char *name;
   int offset;
 };
