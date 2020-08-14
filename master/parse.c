@@ -112,6 +112,7 @@ static VarScope *push_scope(char *name) {
   VarScope *sc = calloc(1, sizeof(VarScope));
   sc->name = name;
   sc->next = var_scope;
+  sc->depth = scope_depth;
   var_scope = sc;
   return sc;
 }
@@ -282,7 +283,7 @@ static Type *basetype(StorageClass *sclass) {
       if (consume("typedef"))
         *sclass |= TYPEDEF;
       else if (consume("static"))
-        *sclass = STATIC;
+        *sclass |= STATIC;
 
       if (*sclass & (*sclass - 1))
         error_tok(tok, "typedef  and static may not be used together");
@@ -671,6 +672,12 @@ static Initializer *new_init_label(Initializer *cur, char *label) {
   return init;
 }
 
+static Initializer *new_init_zero(Initializer *cur, int nbytes) {
+  for (int i = 0; i < nbytes; i++)
+    cur = new_init_val(cur, 1,  0);
+  return cur;
+}
+
 static Initializer *gvar_init_string(char *p, int len) {
   Initializer head = {};
   Initializer *cur = &head;
@@ -679,9 +686,60 @@ static Initializer *gvar_init_string(char *p, int len) {
   return head.next;
 }
 
+static Initializer *emit_struct_padding(Initializer *cur, Type *parent, Member *mem) {
+  int start = mem->offset + mem->ty->size;
+  int end = mem->next ? mem->next->offset : parent->size;
+  return new_init_zero(cur, end - start);
+}
+
 // gvar-initializer2 = assign
+//                   | "(" (gvar-initializer2 ("," gvar-initilizer2)* ","?)? "}"
 static Initializer *gvar_initializer2(Initializer *cur, Type *ty) {
   Token *tok = token;
+
+  if (ty->kind == TY_ARRAY) {
+    expect("{");
+    int i = 0;
+
+    if (!peek("}")) {
+      do {
+        cur = gvar_initializer2(cur, ty->base);
+        i++;
+      } while (!peek_end() && consume(","));
+    }
+    expect_end();
+
+    // Set excess array elements to zero.
+    if (i < ty->array_len)
+      cur = new_init_zero(cur, ty->base->size * (ty->array_len - i));
+
+    if (ty->is_incomplete) {
+      ty->size = ty->base->size * i;
+      ty->array_len = i;
+      ty->is_incomplete = false;
+    }
+    return cur;
+  }
+
+  if (ty->kind == TY_STRUCT) {
+    expect("{");
+    Member *mem = ty->members;
+
+    if (!peek("}")) {
+      do {
+        cur = gvar_initializer2(cur, mem->ty);
+        cur = emit_struct_padding(cur, ty, mem);
+        mem = mem->next;
+      } while (!peek_end() && consume(","));
+    }
+    expect_end();
+
+    // Set excess struct elements to zero.
+    if (mem)
+      cur = new_init_zero(cur, ty->size - mem->offset);
+    return cur;
+  }
+
   Node *expr = conditional();
 
   if (expr->kind == ND_ADDR) {
