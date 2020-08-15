@@ -2,6 +2,16 @@
 
 This repository is almost all copy of [rui314/chibicc](https://github.com/rui314/chibicc)
 
+### How to use
+
+```
+$ cd master
+$ make 9cc-gen2
+$ ./9cc-gen2 examples/nqueen.c > tmp.s
+$ gcc -static -o tmp tmp.s
+$ ./tmp
+```
+
 ### Reference
 
 1. [低レイヤを知りたい人のための C コンパイラ作成入門](https://www.sigbus.info/compilerbook)
