@@ -295,7 +295,7 @@ static Type *basetype(StorageClass *sclass) {
       else if (consume("extern"))
         *sclass |= EXTERN;
 
-      if (*sclass & (*sclass - 1))
+      if (*sclass & ((int)(*sclass) - 1))
         error_tok(tok, "typedef, static and extern may not be used together");
       continue;
     }
@@ -875,11 +875,6 @@ static void global_var(void) {
   expect(";");
 }
 
-static Node *read_expr_stmt(void) {
-  Token *tok = token;
-  return new_unary(ND_EXPR_STMT, expr(), tok);
-}
-
 typedef struct Designator Designator;
 struct Designator {
   Designator *next;
@@ -1102,7 +1097,12 @@ static Node *declaration(void) {
   return node;
 }
 
-// Returs ture if the next token represents a type.
+static Node *read_expr_stmt(void) {
+  Token *tok = token;
+  return new_unary(ND_EXPR_STMT, expr(), tok);
+}
+
+// Returns true if the next token represents a type.
 static bool is_typename(void) {
   return peek("void") || peek("_Bool") ||  peek("char") || peek("short") ||
          peek("int") || peek("long") || peek("enum") || peek("struct") ||
