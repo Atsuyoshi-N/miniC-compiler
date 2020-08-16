@@ -4,6 +4,8 @@ This repository is almost all copy of [rui314/chibicc](https://github.com/rui314
 
 ### How to use
 
+9cc only works on Linux.
+
 ```
 $ cd master
 $ make 9cc-gen2
